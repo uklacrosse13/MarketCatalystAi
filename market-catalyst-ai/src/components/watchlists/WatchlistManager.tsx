@@ -1,15 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import type { Watchlist } from "@/lib/types";
-import { getCompany } from "@/lib/mockData";
+import type { Watchlist, Company } from "@/lib/types";
 import { formatPrice, formatPercent, cx } from "@/lib/utils";
 
 const SUGGESTED_TICKERS = ["NVDA", "AMD", "TSM", "ASML", "LMT", "RTX", "XOM", "MP", "JPM", "FSLR", "PANW", "DE", "SMCI"];
 
-export default function WatchlistManager({ initial }: { initial: Watchlist[] }) {
+export default function WatchlistManager({ initial, companies }: { initial: Watchlist[]; companies: Company[] }) {
   const [watchlists, setWatchlists] = useState<Watchlist[]>(initial);
   const [newName, setNewName] = useState("");
+
+  function getCompany(ticker: string): Company | undefined {
+    return companies.find((c) => c.ticker.toLowerCase() === ticker.toLowerCase());
+  }
 
   function createWatchlist() {
     if (!newName.trim()) return;

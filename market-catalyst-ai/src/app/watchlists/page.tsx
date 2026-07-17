@@ -1,9 +1,13 @@
 import { watchlists } from "@/lib/mockData";
+import { getLiveCompanies } from "@/lib/liveQuotes";
 import WatchlistManager from "@/components/watchlists/WatchlistManager";
 
 export const metadata = { title: "Watchlists — Market Catalyst AI" };
+export const revalidate = 300; // matches the live-quotes cache window
 
-export default function WatchlistsPage() {
+export default async function WatchlistsPage() {
+  const companies = await getLiveCompanies();
+
   return (
     <div className="space-y-6">
       <div>
@@ -14,7 +18,7 @@ export default function WatchlistsPage() {
           watchlists per signed-in user.
         </p>
       </div>
-      <WatchlistManager initial={watchlists} />
+      <WatchlistManager initial={watchlists} companies={companies} />
     </div>
   );
 }

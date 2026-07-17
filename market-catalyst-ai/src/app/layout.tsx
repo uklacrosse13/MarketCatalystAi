@@ -29,6 +29,14 @@ export const metadata: Metadata = {
     "AI-powered investment research that connects breaking news, legislation, and geopolitics to the industries, sectors, and companies they may affect. Research and education only — not investment advice.",
 };
 
+// Fallback cache-refresh window, inherited by any page under this layout that
+// doesn't export its own `revalidate`. Without this, a page with no explicit
+// value defaults to fully static (revalidate: false) — cached forever at
+// build time — which silently froze the shared TickerTape (and anything else
+// in this layout) on Dashboard, Sectors index, History, and Assistant. Pages
+// that need a different window (e.g. news pages at 600s) still override this.
+export const revalidate = 300;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>

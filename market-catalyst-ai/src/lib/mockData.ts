@@ -9,11 +9,14 @@ import type {
 } from "./types";
 
 // ---------------------------------------------------------------------------
-// This file is the platform's built-in sample dataset. It exists so the app
-// is fully explorable with `npm run dev` and no API keys configured. Once you
-// wire up src/lib/newsProvider.ts, src/lib/stockProvider.ts and src/lib/openai.ts,
-// swap these arrays for live Supabase queries — the shapes already match the
-// types those providers return, so components don't need to change.
+// This file is the platform's built-in sample dataset for sectors, companies,
+// watchlists, and historical events. It exists so those pages are fully
+// explorable with `npm run dev` and no API keys configured.
+// Once you add real stock-quote keys (see src/lib/stockProvider.ts) and connect
+// Supabase (see supabase/schema.sql), swap these arrays for live queries — the
+// shapes already match what those modules return, so components don't need to
+// change. The live News Analysis system (src/lib/news/) is separate and does
+// not use this mock dataset at all — see src/lib/news/aggregator.ts.
 // ---------------------------------------------------------------------------
 
 export const companies: Company[] = [

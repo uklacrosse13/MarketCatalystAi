@@ -1,7 +1,8 @@
-import { companies } from "@/lib/mockData";
+import { getLiveCompanies } from "@/lib/liveQuotes";
 import { formatPrice, formatPercent, cx } from "@/lib/utils";
 
-export default function TickerTape() {
+export default async function TickerTape() {
+  const companies = await getLiveCompanies();
   const items = [...companies, ...companies]; // duplicated for seamless loop
 
   return (

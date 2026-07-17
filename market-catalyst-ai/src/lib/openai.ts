@@ -2,13 +2,12 @@ import OpenAI from "openai";
 import type { ChatMessage } from "./types";
 
 // ---------------------------------------------------------------------------
-// Central OpenAI wrapper used by:
-//   - src/app/api/assistant/route.ts   (AI Research Assistant chat)
-//   - (extension point) an event-ingestion worker that classifies incoming
-//     news into the MarketEvent shape defined in src/lib/types.ts
-//
-// Without OPENAI_API_KEY set, callers should catch the thrown error and fall
-// back to mock data — see api/assistant/route.ts for the pattern.
+// OpenAI is used ONLY for the optional AI Research Assistant chat
+// (src/app/assistant, backed by /api/assistant). It plays no role in the
+// news feed, event cards, or market-impact analysis — those are entirely
+// rules-based (see src/lib/news/marketImpact.ts) and require no AI model or
+// API key. Without OPENAI_API_KEY set, the assistant route falls back to a
+// clearly-labeled canned response rather than failing.
 // ---------------------------------------------------------------------------
 
 function getClient(): OpenAI {
@@ -50,40 +49,4 @@ export async function generateAssistantReply(messages: ChatMessage[]): Promise<s
   });
 
   return response.choices[0]?.message?.content ?? "I wasn't able to generate a response — please try again.";
-}
-
-/**
- * Extension point: classify a raw news article into the MarketEvent shape
- * (category, potential winners/losers, confidence, reasoning) used throughout
- * the platform. Wire this into a cron job or webhook that pulls from
- * src/lib/newsProvider.ts and writes results into your `events` Supabase table.
- */
-export async function classifyEventFromHeadline(headline: string, articleBody: string) {
-  const client = getClient();
-  const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
-
-  const prompt = `Analyze this news for a market-research platform. Return ONLY valid JSON matching this shape:
-{
-  "category": string,
-  "subcategory": string,
-  "potentialWinners": [{ "ticker": string, "name": string, "rationale": string }],
-  "potentialLosers": [{ "ticker": string, "name": string, "rationale": string }],
-  "confidence": number (0-100),
-  "timeHorizon": "days" | "weeks" | "1-6 months" | "6-18 months" | "1-3 years",
-  "reasoning": string[]
-}
-
-Headline: ${headline}
-Article: ${articleBody}`;
-
-  const response = await client.chat.completions.create({
-    model,
-    messages: [{ role: "user", content: prompt }],
-    temperature: 0.2,
-    max_tokens: 800,
-  });
-
-  const text = response.choices[0]?.message?.content ?? "{}";
-  const cleaned = text.replace(/```json|```/g, "").trim();
-  return JSON.parse(cleaned);
 }

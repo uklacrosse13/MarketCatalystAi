@@ -1,4 +1,4 @@
-import { events, newsArticles, sectors, companies } from "@/lib/mockData";
+import { events, newsArticles, sectors } from "@/lib/mockData";
 import SentimentGauge from "@/components/dashboard/SentimentGauge";
 import EconomicCalendar from "@/components/dashboard/EconomicCalendar";
 import MarketHeatMap from "@/components/home/MarketHeatMap";

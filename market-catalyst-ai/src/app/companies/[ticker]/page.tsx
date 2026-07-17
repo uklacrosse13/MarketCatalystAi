@@ -1,9 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getCompany, companies, getSector, events } from "@/lib/mockData";
+import { getLiveCompany } from "@/lib/liveQuotes";
 import { formatPrice, formatPercent, cx } from "@/lib/utils";
 import StockSparkline from "@/components/shared/StockSparkline";
 import ConfidenceMeter from "@/components/shared/ConfidenceMeter";
+
+export const revalidate = 300; // matches the live-quotes cache window
 
 export function generateStaticParams() {
   return companies.map((c) => ({ ticker: c.ticker }));
@@ -14,8 +17,8 @@ export function generateMetadata({ params }: { params: { ticker: string } }) {
   return { title: company ? `${company.ticker} — Market Catalyst AI` : "Company — Market Catalyst AI" };
 }
 
-export default function CompanyPage({ params }: { params: { ticker: string } }) {
-  const company = getCompany(params.ticker);
+export default async function CompanyPage({ params }: { params: { ticker: string } }) {
+  const company = await getLiveCompany(params.ticker);
   if (!company) notFound();
 
   const sector = getSector(company.sectorSlug);
